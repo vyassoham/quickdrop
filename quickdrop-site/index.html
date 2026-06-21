@@ -1,23 +1,313 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>QuickDrop Delivery</title>
+  <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
-    body {
-      margin: 0;
-      padding: 0;
-    }
-    iframe {
-      width: 100%;
-      height: 100vh;
-      border: none;
-    }
-  </style>
+  <title>QuickDrop — On-Demand Delivery Platform</title>
+  <meta name="description" content="QuickDrop is a premium on-demand delivery tracking and fleet management platform. Track orders, manage drivers, and analyze delivery performance in real-time.">
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-  <iframe src="https://landbot.online/v3/H-3384481-SHDS86J7FPGUFYZH/index.html"></iframe>
+  <!-- ============================================================ -->
+  <!-- Top Navigation Bar                                           -->
+  <!-- ============================================================ -->
+  <header class="topbar">
+    <div class="topbar-brand">
+      <div class="logo-icon">&#9889;</div>
+      <span>QuickDrop</span>
+    </div>
+    <nav>
+      <ul class="topbar-nav">
+        <li><a href="#" data-tab="dashboard" class="active">&#128202; Dashboard</a></li>
+        <li><a href="#" data-tab="track">&#128270; Track</a></li>
+        <li><a href="#" data-tab="neworder">&#10133; New Order</a></li>
+        <li><a href="#" data-tab="fleet">&#128663; Fleet</a></li>
+        <li><a href="#" data-tab="analytics">&#128200; Analytics</a></li>
+        <li><a href="#" data-tab="settings">&#9881; Settings</a></li>
+      </ul>
+    </nav>
+    <div class="topbar-actions">
+      <div class="topbar-status"><div class="pulse-dot"></div> System Online</div>
+    </div>
+  </header>
+
+  <!-- ============================================================ -->
+  <!-- Main Application Container                                   -->
+  <!-- ============================================================ -->
+  <main class="app-main">
+
+    <!-- ========== DASHBOARD ========== -->
+    <section id="page-dashboard" class="tab-page active">
+      <div class="section-header">
+        <div><h1>Dashboard</h1><p>Real-time delivery operations overview</p></div>
+      </div>
+      <div id="dashboard-kpis" class="kpi-grid"></div>
+      <div class="grid-23">
+        <div class="glass-card">
+          <h3>&#127758; Live Delivery Map</h3>
+          <div id="dashboard-map" class="map-container"></div>
+        </div>
+        <div class="glass-card">
+          <h3>&#128276; Activity Feed</h3>
+          <div id="dashboard-feed" class="feed-list"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== TRACK ORDER ========== -->
+    <section id="page-track" class="tab-page">
+      <div class="section-header">
+        <div><h1>Track Order</h1><p>Search and monitor delivery progress</p></div>
+      </div>
+      <div class="glass-card" style="margin-bottom:20px">
+        <div style="display:flex;gap:12px;align-items:flex-end">
+          <div class="form-group" style="flex:1;margin-bottom:0">
+            <label for="track-input">Order ID</label>
+            <input type="text" id="track-input" class="form-input" placeholder="Enter order ID (e.g., QD-XXXXXX-XXXX)">
+          </div>
+          <button class="btn btn-primary" onclick="App.trackOrder()">Track Order</button>
+        </div>
+      </div>
+      <div id="track-results" style="margin-bottom:20px"></div>
+      <div class="glass-card">
+        <h3>Recent Orders</h3>
+        <div id="track-recent" style="overflow-x:auto"></div>
+      </div>
+    </section>
+
+    <!-- ========== NEW ORDER WIZARD ========== -->
+    <section id="page-neworder" class="tab-page">
+      <div class="section-header">
+        <div><h1>Create New Order</h1><p>Schedule a new delivery in 4 easy steps</p></div>
+      </div>
+      <div class="glass-card">
+        <div class="wizard-steps">
+          <div class="wizard-step active">&#9312; Pickup</div>
+          <div class="wizard-step">&#9313; Dropoff</div>
+          <div class="wizard-step">&#9314; Package</div>
+          <div class="wizard-step">&#9315; Confirm</div>
+        </div>
+
+        <!-- Step 1: Pickup -->
+        <div class="wizard-panel active">
+          <h3>Pickup Location</h3>
+          <div class="form-group">
+            <label for="pickup-name">Sender Name</label>
+            <input type="text" id="pickup-name" class="form-input" placeholder="Full name">
+          </div>
+          <div class="form-group">
+            <label for="pickup-phone">Phone Number</label>
+            <input type="tel" id="pickup-phone" class="form-input" placeholder="+91 XXXXX XXXXX">
+          </div>
+          <div class="form-group">
+            <label for="pickup-addr">Pickup Address</label>
+            <textarea id="pickup-addr" class="form-input" placeholder="Full street address, area, city"></textarea>
+          </div>
+          <div class="form-group">
+            <label for="pickup-landmark">Landmark (Optional)</label>
+            <input type="text" id="pickup-landmark" class="form-input" placeholder="Near...">
+          </div>
+          <div style="display:flex;justify-content:flex-end;gap:12px;margin-top:16px">
+            <button class="btn btn-primary" onclick="App.wizardNext()">Next: Dropoff &#8594;</button>
+          </div>
+        </div>
+
+        <!-- Step 2: Dropoff -->
+        <div class="wizard-panel">
+          <h3>Dropoff Location</h3>
+          <div class="form-group">
+            <label for="dropoff-name">Receiver Name</label>
+            <input type="text" id="dropoff-name" class="form-input" placeholder="Full name">
+          </div>
+          <div class="form-group">
+            <label for="dropoff-phone">Phone Number</label>
+            <input type="tel" id="dropoff-phone" class="form-input" placeholder="+91 XXXXX XXXXX">
+          </div>
+          <div class="form-group">
+            <label for="dropoff-addr">Dropoff Address</label>
+            <textarea id="dropoff-addr" class="form-input" placeholder="Full street address, area, city"></textarea>
+          </div>
+          <div class="form-group">
+            <label for="dropoff-notes">Delivery Notes (Optional)</label>
+            <input type="text" id="dropoff-notes" class="form-input" placeholder="Ring doorbell, leave at door, etc.">
+          </div>
+          <div style="display:flex;justify-content:flex-end;gap:12px;margin-top:16px">
+            <button class="btn btn-secondary" onclick="App.wizardBack()">&#8592; Back</button>
+            <button class="btn btn-primary" onclick="App.wizardNext()">Next: Package &#8594;</button>
+          </div>
+        </div>
+
+        <!-- Step 3: Package -->
+        <div class="wizard-panel">
+          <h3>Package Details</h3>
+          <div class="grid-2">
+            <div class="form-group">
+              <label for="pkg-type">Package Type</label>
+              <select id="pkg-type" class="form-input" onchange="App.updateCostEstimate()">
+                <option>Document</option>
+                <option selected>Small Parcel</option>
+                <option>Medium Box</option>
+                <option>Large Box</option>
+                <option>Fragile Item</option>
+                <option>Electronics</option>
+                <option>Food Delivery</option>
+                <option>Medicine</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="pkg-priority">Priority</label>
+              <select id="pkg-priority" class="form-input" onchange="App.updateCostEstimate()">
+                <option value="standard">Standard (2-4 hrs)</option>
+                <option value="express">Express (1-2 hrs)</option>
+                <option value="priority">Priority (30-60 min)</option>
+              </select>
+            </div>
+          </div>
+          <div class="grid-2">
+            <div class="form-group">
+              <label for="pkg-weight">Weight (kg)</label>
+              <input type="number" id="pkg-weight" class="form-input" value="1" min="0.1" max="50" step="0.1" onchange="App.updateCostEstimate()">
+            </div>
+            <div class="form-group">
+              <label>Estimated Cost</label>
+              <div id="cost-estimate" style="font-size:1.75rem;font-weight:800;color:var(--accent-green);padding-top:4px">&#8377;50</div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="pkg-desc">Package Description (Optional)</label>
+            <input type="text" id="pkg-desc" class="form-input" placeholder="Brief description of contents">
+          </div>
+          <div style="display:flex;justify-content:flex-end;gap:12px;margin-top:16px">
+            <button class="btn btn-secondary" onclick="App.wizardBack()">&#8592; Back</button>
+            <button class="btn btn-primary" onclick="App.wizardNext()">Next: Confirm &#8594;</button>
+          </div>
+        </div>
+
+        <!-- Step 4: Confirm -->
+        <div class="wizard-panel">
+          <h3>Confirm &amp; Place Order</h3>
+          <div class="glass-card" style="background:var(--accent-green-glow);border-color:rgba(16,185,129,0.3);margin-bottom:16px">
+            <p style="text-align:center;font-size:1.1rem;color:var(--accent-green)">
+              &#10003; Your order is ready to be placed. Review details above and click confirm.
+            </p>
+          </div>
+          <div class="grid-2">
+            <div>
+              <p style="color:var(--text-muted);font-size:0.85rem;margin-bottom:4px">Pickup</p>
+              <p style="font-weight:600">Address entered in Step 1</p>
+            </div>
+            <div>
+              <p style="color:var(--text-muted);font-size:0.85rem;margin-bottom:4px">Dropoff</p>
+              <p style="font-weight:600">Address entered in Step 2</p>
+            </div>
+          </div>
+          <div style="display:flex;justify-content:flex-end;gap:12px;margin-top:24px">
+            <button class="btn btn-secondary" onclick="App.wizardBack()">&#8592; Back</button>
+            <button class="btn btn-primary btn-block" onclick="App.submitOrder()" style="max-width:260px">&#9889; Place Order Now</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== FLEET MANAGER ========== -->
+    <section id="page-fleet" class="tab-page">
+      <div class="section-header">
+        <div><h1>Fleet Manager</h1><p>Monitor and manage your delivery drivers</p></div>
+      </div>
+      <div id="fleet-stats" class="kpi-grid"></div>
+      <div class="glass-card">
+        <h3>Driver Roster</h3>
+        <div id="fleet-list" style="display:flex;flex-direction:column;gap:12px;max-height:600px;overflow-y:auto"></div>
+      </div>
+    </section>
+
+    <!-- ========== ANALYTICS ========== -->
+    <section id="page-analytics" class="tab-page">
+      <div class="section-header">
+        <div><h1>Analytics</h1><p>Delivery performance insights and metrics</p></div>
+      </div>
+      <div class="grid-2" style="margin-bottom:20px">
+        <div class="glass-card">
+          <h3>&#128200; Revenue (Last 14 Days)</h3>
+          <div class="chart-wrap"><canvas id="chart-revenue"></canvas></div>
+        </div>
+        <div class="glass-card">
+          <h3>&#128293; Delivery Heatmap (Hourly)</h3>
+          <div class="chart-wrap"><canvas id="chart-heatmap"></canvas></div>
+        </div>
+      </div>
+      <div class="grid-2">
+        <div class="glass-card">
+          <h3>&#128640; Top Routes</h3>
+          <div id="analytics-routes"></div>
+        </div>
+        <div class="glass-card">
+          <h3>&#11088; Customer Satisfaction</h3>
+          <div id="analytics-satisfaction"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== SETTINGS ========== -->
+    <section id="page-settings" class="tab-page">
+      <div class="section-header">
+        <div><h1>Settings</h1><p>Configure your QuickDrop platform preferences</p></div>
+      </div>
+      <div class="grid-2">
+        <div class="glass-card">
+          <h3>Notifications</h3>
+          <div class="setting-row">
+            <div><div class="setting-label">Push Notifications</div><div class="setting-desc">Receive alerts for new orders and status changes</div></div>
+            <div class="toggle on"></div>
+          </div>
+          <div class="setting-row">
+            <div><div class="setting-label">Email Alerts</div><div class="setting-desc">Daily summary reports via email</div></div>
+            <div class="toggle on"></div>
+          </div>
+          <div class="setting-row">
+            <div><div class="setting-label">SMS Updates</div><div class="setting-desc">Send SMS to customers on delivery status changes</div></div>
+            <div class="toggle"></div>
+          </div>
+          <div class="setting-row">
+            <div><div class="setting-label">Sound Effects</div><div class="setting-desc">Play notification sounds on new events</div></div>
+            <div class="toggle on"></div>
+          </div>
+        </div>
+        <div>
+          <div class="glass-card" style="margin-bottom:20px">
+            <h3>Account</h3>
+            <div class="form-group">
+              <label>Organization Name</label>
+              <input type="text" class="form-input" value="QuickDrop Logistics Pvt. Ltd.">
+            </div>
+            <div class="form-group">
+              <label>Admin Email</label>
+              <input type="email" class="form-input" value="admin@quickdrop.in">
+            </div>
+            <div class="form-group">
+              <label>API Key</label>
+              <input type="text" class="form-input" value="qd_live_xxxxxxxxxxxxxxxx" style="font-family:monospace">
+            </div>
+            <button class="btn btn-primary btn-sm">Save Changes</button>
+          </div>
+          <div class="glass-card">
+            <h3>Danger Zone</h3>
+            <p style="color:var(--text-muted);font-size:0.85rem;margin-bottom:12px">Reset all data to factory defaults. This cannot be undone.</p>
+            <button class="btn btn-danger" onclick="App.resetAllData()">&#128465; Reset All Data</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Toast Container -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- Scripts -->
+  <script src="data.js"></script>
+  <script src="app.js"></script>
 
 </body>
 </html>
